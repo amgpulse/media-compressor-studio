@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Compressor Studio | Professional Video Compression</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #090a0f;
+      --bg-card: #12151e;
+      --bg-card-hover: #181c28;
+      --bg-panel: #161a26;
+      --border-color: #212738;
+      --border-color-hover: #323b54;
+
+      --primary: #5a5eec;
+      --primary-hover: #4b4fdb;
+      --primary-glow: rgba(90, 94, 236, 0.25);
+
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #ef4444;
+
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--text-main);
+      min-height: 100vh;
+      direction: ltr;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* TOP NAVBAR */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #5a5eec 0%, #3b82f6 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(90, 94, 236, 0.3);
+    }
+
+    .nav-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.3px;
+    }
+
+    .nav-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .nav-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+    }
+
+    /* CARD PANELS */
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .panel-num {
+      background: rgba(90, 94, 236, 0.15);
+      color: var(--primary);
+      border: 1px solid rgba(90, 94, 236, 0.3);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* UPLOAD TARGET */
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      background: rgba(18, 21, 30, 0.5);
+      border-radius: var(--radius-md);
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.active {
+      border-color: var(--primary);
+      background: rgba(90, 94, 236, 0.05);
+    }
+
+    .drop-icon-wrapper {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .drop-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .drop-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .format-tags {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-dim);
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* METADATA DISPLAY */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .meta-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+
+    .meta-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .meta-val {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* SEGMENTED CONTROL TABS */
+    .segmented-control {
+      display: flex;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+    }
+
+    .segment-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .segment-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 8px var(--primary-glow);
+    }
+
+    /* SLIDER & CONTROLS */
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .control-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    input[type="number"], select {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    input[type="number"]:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--border-color);
+      border-radius: 3px;
+      outline: none;
+      margin: 12px 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(90, 94, 236, 0.4);
+    }
+
+    .preset-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border-color: var(--border-color-hover);
+    }
+
+    /* STATS SUMMARY BOX */
+    .summary-box {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .summary-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .summary-highlight {
+      color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    /* QUALITY PRESETS GRID */
+    .quality-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .quality-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .quality-card:hover {
+      border-color: var(--border-color-hover);
+    }
+
+    .quality-card.selected {
+      border-color: var(--primary);
+      background: rgba(90, 94, 236, 0.1);
+    }
+
+    .quality-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 4px;
+    }
+
+    .quality-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-color-hover);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- NAVBAR HEADER -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <div class="nav-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="14" x="2" y="5" rx="2"/><path d="m10 9 5 3-5 3v-6Z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="nav-title">Media Compressor Studio</div>
+          <div class="nav-sub">High-Performance Video Optimization & Transcoding Engine</div>
+        </div>
+      </div>
+
+      <div class="nav-status">
+        <span class="status-dot"></span>
+        <span>FFmpeg Engine Ready</span>
+      </div>
+    </header>
+
+    <!-- STEP 1: FILE UPLOAD -->
+    <section class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="panel-num">01</span>
+          <span>Video Source & File Probe</span>
+        </div>
+      </div>
+
+      <div id="dropzone" class="dropzone">
+        <input type="file" id="video-input" accept="video/*,.mp4,.mkv,.mov,.avi,.webm" style="display:none;">
+        <div class="drop-icon-wrapper">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
+          </svg>
+        </div>
+        <div class="drop-title">Drag & drop video here or click to browse</div>
+        <div class="drop-desc">Supports MP4, MKV, MOV, WEBM, AVI (No file size limit)</div>
+        <div class="format-tags">
+          <span class="tag">MP4</span>
+          <span class="tag">MKV</span>
+          <span class="tag">MOV</span>
+          <span class="tag">WEBM</span>
+          <span class="tag">H.264 / AVC</span>
+        </div>
+      </div>
+
+      <div id="upload-progress-box" class="hidden" style="text-align: center; padding: 30px;">
+        <svg class="spinner" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/>
+        </svg>
+        <p style="color: var(--text-muted); margin-top: 10px; font-size: 0.9rem;">Probing media streams and extracting metadata...</p>
+      </div>
+
+      <!-- VIDEO METADATA CARD -->
+      <div id="video-info-box" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div>
+            <h3 id="video-name" style="font-size: 1.1rem; font-weight: 700; color: var(--text-main);"></h3>
+            <span style="font-size: 0.8rem; color: var(--text-dim);">Input video stream probed successfully</span>
+          </div>
+          <button id="btn-change-video" class="btn btn-secondary" style="padding: 8px 14px; font-size: 0.85rem;">
+            Change File
+          </button>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-card">
+            <div class="meta-label">Original File Size</div>
+            <div id="video-size" class="meta-val" style="color: var(--primary);"></div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Duration</div>
+            <div id="video-duration" class="meta-val"></div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Resolution</div>
+            <div id="video-res" class="meta-val"></div>
+          </div>
+          <div class="meta-card">
+            <div class="meta-label">Video Codec</div>
+            <div id="video-codec" class="meta-val">H.264</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; border-radius: var(--radius-md); overflow: hidden; background: #000; border: 1px solid var(--border-color);">
+          <video id="input-video-player" controls style="width: 100%; max-height: 240px; object-fit: contain;"></video>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: ENCODER CONFIGURATION -->
+    <section id="options-panel" class="panel hidden">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="panel-num">02</span>
+          <span>Encoder Configuration</span>
+        </div>
+      </div>
+
+      <!-- SEGMENTED TABS -->
+      <div class="segmented-control">
+        <button id="tab-size" class="segment-btn active">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m12 8-4 4 4 4"/><path d="M16 12H8"/></svg>
+          Method 1: Target File Size (MB)
+        </button>
+        <button id="tab-quality" class="segment-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+          Method 2: Quality & Codec Presets
+        </button>
+      </div>
+
+      <!-- METHOD 1: TARGET SIZE -->
+      <div id="method-size-content">
+        <div class="control-group">
+          <div class="control-header">
+            <div class="control-label">Target Output File Size (Megabytes):</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input type="number" id="target-size-number" min="1" step="0.5" style="width: 110px; text-align: center; font-weight: 700; font-size: 1rem;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">MB</span>
+            </div>
+          </div>
+
+          <input type="range" id="target-size-slider" min="1" step="0.5">
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-dim);">
+            <span>1 MB</span>
+            <span id="slider-mid-label">50%</span>
+            <span id="slider-max-label">Original Size</span>
+          </div>
+
+          <div class="preset-chips">
+            <span class="chip preset-btn" data-mb="10">10 MB (Email)</span>
+            <span class="chip preset-btn" data-mb="25">25 MB (Telegram)</span>
+            <span class="chip preset-btn" data-mb="16">16 MB (WhatsApp)</span>
+            <span class="chip preset-btn" data-pct="0.5">50% Size Reduction</span>
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <div>
+            <div class="summary-text">Estimated Savings: <span id="savings-title" class="summary-highlight"></span></div>
+            <div id="savings-desc" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;"></div>
+          </div>
+          <div id="savings-badge" style="font-weight: 700; color: var(--accent-emerald); font-size: 0.95rem; font-family: 'Inter', sans-serif;"></div>
+        </div>
+      </div>
+
+      <!-- METHOD 2: TARGET QUALITY -->
+      <div id="method-quality-content" class="hidden">
+        <div class="control-label" style="margin-bottom: 10px;">Constant Rate Factor (CRF Preset):</div>
+
+        <div class="quality-grid">
+          <div class="quality-card" data-crf="high">
+            <div class="quality-title">High Quality (CRF 20)</div>
+            <div class="quality-desc">Visually lossless quality with 20%-40% size reduction</div>
+          </div>
+
+          <div class="quality-card selected" data-crf="medium">
+            <div class="quality-title">Balanced (CRF 25)</div>
+            <div class="quality-desc">Recommended preset for optimal file size & clarity ratio</div>
+          </div>
+
+          <div class="quality-card" data-crf="low">
+            <div class="quality-title">High Compression (CRF 30)</div>
+            <div class="quality-desc">Up to 85% size reduction, ideal for fast web streaming</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px;">
+          <div>
+            <label class="control-label" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Target Resolution:</label>
+            <select id="res-select" style="width: 100%;">
+              <option value="original">Original Resolution</option>
+              <option value="1080">1080p (Full HD)</option>
+              <option value="720">720p (HD)</option>
+              <option value="480">480p (SD)</option>
+              <option value="360">360p (Mobile)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="control-label" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Framerate (FPS):</label>
+            <select id="fps-select" style="width: 100%;">
+              <option value="original">Original Framerate</option>
+              <option value="30">30 fps (Standard)</option>
+              <option value="24">24 fps (Cinematic)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="control-label" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Audio Track & Codec:</label>
+            <select id="audio-select" style="width: 100%;">
+              <option value="128k">AAC 128 kbps (High Quality)</option>
+              <option value="96k">AAC 96 kbps (Standard)</option>
+              <option value="64k">AAC 64 kbps (Compressed)</option>
+              <option value="mute">Mute Audio</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; text-align: center;">
+        <button id="btn-start-compress" class="btn btn-primary" style="width: 100%; max-width: 320px; padding: 14px;">
+          Start Compression Process
+        </button>
+      </div>
+    </section>
+
+    <!-- STEP 3: RESULT & DOWNLOAD -->
+    <section id="result-panel" class="panel hidden">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span class="panel-num">03</span>
+          <span>Compression Output & Download</span>
+        </div>
+      </div>
+
+      <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-md); padding: 20px; text-align: center; margin-bottom: 20px;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--accent-emerald); margin-bottom: 12px;">Video Transcoding Completed Successfully</h3>
+
+        <div style="display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap;">
+          <div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Original Size</div>
+            <div id="result-orig-size" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-rose); font-family: 'Inter', sans-serif;"></div>
+          </div>
+          <div style="color: var(--text-dim);">➔</div>
+          <div>
+            <div style="font-size: 0.78rem; color: var(--text-muted);">Output Size</div>
+            <div id="result-comp-size" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-emerald); font-family: 'Inter', sans-serif;"></div>
+          </div>
+          <div id="result-saved-badge" style="font-size: 1rem; font-weight: 700; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.15); padding: 6px 14px; border-radius: 20px; font-family: 'Inter', sans-serif;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+        <button id="btn-download" class="btn btn-primary" style="padding: 12px 28px;">
+          Download Compressed Video
+        </button>
+        <button id="btn-reset" class="btn btn-secondary">
+          Compress Another Video
+        </button>
+      </div>
+
+      <div>
+        <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 10px;">Output Video Preview:</div>
+        <div style="border-radius: var(--radius-md); overflow: hidden; background: #000; border: 1px solid var(--border-color);">
+          <video id="output-video-player" controls autoplay style="width: 100%; max-height: 400px; object-fit: contain;"></video>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE ENCODER PROGRESS MODAL -->
+    <div id="progress-modal" class="modal-overlay hidden">
+      <div class="panel" style="max-width: 420px; width: 100%; text-align: center; border-color: var(--primary);">
+        <div style="margin-bottom: 16px;">
+          <svg class="spinner" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="10"/>
+          </svg>
+        </div>
+
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Encoding & Transcoding Video...</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px;">FFmpeg native engine is applying encoder parameters</p>
+
+        <div id="progress-pct" style="font-size: 2.8rem; font-weight: 800; color: var(--text-main); font-family: 'Inter', sans-serif; margin-bottom: 10px;">0%</div>
+
+        <div style="height: 6px; background: var(--border-color); border-radius: 3px; overflow: hidden; margin-bottom: 16px;">
+          <div id="progress-bar-inner" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.2s ease;"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--bg-panel); padding: 10px; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-muted); font-family: 'Inter', sans-serif;">
+          <div>Speed: <strong id="progress-speed" style="color: var(--text-main);">1.0x</strong></div>
+          <div>Framerate: <strong id="progress-fps" style="color: var(--text-main);">0 fps</strong></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentFileData = null;
+    let currentMode = 'targetSize';
+    let selectedQualityPreset = 'medium';
+    let outputFilename = '';
+
+    const dropzone = document.getElementById('dropzone');
+    const videoInput = document.getElementById('video-input');
+    const uploadProgressBox = document.getElementById('upload-progress-box');
+    const videoInfoBox = document.getElementById('video-info-box');
+    const optionsPanel = document.getElementById('options-panel');
+    const resultPanel = document.getElementById('result-panel');
+
+    const videoName = document.getElementById('video-name');
+    const videoSize = document.getElementById('video-size');
+    const videoDuration = document.getElementById('video-duration');
+    const videoRes = document.getElementById('video-res');
+    const inputVideoPlayer = document.getElementById('input-video-player');
+
+    const tabSize = document.getElementById('tab-size');
+    const tabQuality = document.getElementById('tab-quality');
+    const methodSizeContent = document.getElementById('method-size-content');
+    const methodQualityContent = document.getElementById('method-quality-content');
+
+    const targetSizeNumber = document.getElementById('target-size-number');
+    const targetSizeSlider = document.getElementById('target-size-slider');
+    const sliderMidLabel = document.getElementById('slider-mid-label');
+    const sliderMaxLabel = document.getElementById('slider-max-label');
+
+    const savingsTitle = document.getElementById('savings-title');
+    const savingsDesc = document.getElementById('savings-desc');
+    const savingsBadge = document.getElementById('savings-badge');
+
+    const btnStartCompress = document.getElementById('btn-start-compress');
+    const btnChangeVideo = document.getElementById('btn-change-video');
+
+    const progressModal = document.getElementById('progress-modal');
+    const progressPct = document.getElementById('progress-pct');
+    const progressBarInner = document.getElementById('progress-bar-inner');
+    const progressSpeed = document.getElementById('progress-speed');
+    const progressFps = document.getElementById('progress-fps');
+
+    const resultOrigSize = document.getElementById('result-orig-size');
+    const resultCompSize = document.getElementById('result-comp-size');
+    const resultSavedBadge = document.getElementById('result-saved-badge');
+    const outputVideoPlayer = document.getElementById('output-video-player');
+    const btnDownload = document.getElementById('btn-download');
+    const btnReset = document.getElementById('btn-reset');
+
+    dropzone.addEventListener('click', () => videoInput.click());
+    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('active'); });
+    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('active'));
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('active');
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        uploadFile(e.dataTransfer.files[0]);
+      }
+    });
+    videoInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        uploadFile(e.target.files[0]);
+      }
+    });
+
+    async function uploadFile(file) {
+      dropzone.classList.add('hidden');
+      uploadProgressBox.classList.remove('hidden');
+
+      const formData = new FormData();
+      formData.append('video', file);
+
+      try {
+        const res = await fetch('/api/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to upload video file');
+
+        currentFileData = data;
+        displayVideoInfo(data);
+      } catch (err) {
+        alert(err.message);
+        dropzone.classList.remove('hidden');
+        uploadProgressBox.classList.add('hidden');
+      }
+    }
+
+    function displayVideoInfo(data) {
+      uploadProgressBox.classList.add('hidden');
+      videoInfoBox.classList.remove('hidden');
+      optionsPanel.classList.remove('hidden');
+
+      videoName.textContent = data.originalName;
+      videoSize.textContent = data.sizeFormatted;
+      
+      const meta = data.metadata || {};
+      const dur = meta.duration || 0;
+      const min = Math.floor(dur / 60);
+      const sec = Math.floor(dur % 60);
+      videoDuration.textContent = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+      videoRes.textContent = `${meta.width || 0}x${meta.height || 0}`;
+      inputVideoPlayer.src = data.filePath;
+
+      const origMB = data.size / (1024 * 1024);
+      const defaultTarget = Math.max(1, parseFloat((origMB * 0.4).toFixed(1)));
+      
+      targetSizeSlider.max = Math.max(2, Math.floor(origMB - 0.5));
+      targetSizeSlider.value = defaultTarget;
+      targetSizeNumber.value = defaultTarget;
+      targetSizeNumber.max = (origMB - 0.5).toFixed(1);
+
+      sliderMidLabel.textContent = `${(origMB * 0.5).toFixed(1)} MB (50%)`;
+      sliderMaxLabel.textContent = `${origMB.toFixed(1)} MB`;
+
+      updateSavingsSummary();
+    }
+
+    targetSizeNumber.addEventListener('input', (e) => {
+      let val = parseFloat(e.target.value);
+      if (!isNaN(val)) {
+        targetSizeSlider.value = val;
+        updateSavingsSummary();
+      }
+    });
+
+    targetSizeSlider.addEventListener('input', (e) => {
+      targetSizeNumber.value = e.target.value;
+      updateSavingsSummary();
+    });
+
+    function updateSavingsSummary() {
+      if (!currentFileData) return;
+      const origMB = currentFileData.size / (1024 * 1024);
+      const targetMB = parseFloat(targetSizeNumber.value) || 1;
+      const reduction = Math.max(0, origMB - targetMB);
+      const reductionPct = Math.round((reduction / origMB) * 100);
+
+      savingsTitle.textContent = `${reductionPct}% Size Reduction`;
+      savingsDesc.textContent = `Reduced from ${origMB.toFixed(1)} MB to ${targetMB.toFixed(1)} MB (Saved ${reduction.toFixed(1)} MB)`;
+      savingsBadge.textContent = `-${reductionPct}%`;
+    }
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!currentFileData) return;
+        const origMB = currentFileData.size / (1024 * 1024);
+        const mb = btn.getAttribute('data-mb');
+        const pct = btn.getAttribute('data-pct');
+
+        if (mb) {
+          targetSizeNumber.value = Math.min(parseFloat(mb), (origMB - 0.5).toFixed(1));
+        } else if (pct) {
+          targetSizeNumber.value = (origMB * parseFloat(pct)).toFixed(1);
+        }
+        targetSizeSlider.value = targetSizeNumber.value;
+        updateSavingsSummary();
+      });
+    });
+
+    tabSize.addEventListener('click', () => {
+      currentMode = 'targetSize';
+      tabSize.classList.add('active');
+      tabQuality.classList.remove('active');
+      methodSizeContent.classList.remove('hidden');
+      methodQualityContent.classList.add('hidden');
+    });
+
+    tabQuality.addEventListener('click', () => {
+      currentMode = 'targetQuality';
+      tabQuality.classList.add('active');
+      tabSize.classList.remove('active');
+      methodQualityContent.classList.remove('hidden');
+      methodSizeContent.classList.add('hidden');
+    });
+
+    document.querySelectorAll('.quality-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.quality-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedQualityPreset = card.getAttribute('data-crf');
+      });
+    });
+
+    btnChangeVideo.addEventListener('click', resetAll);
+    btnReset.addEventListener('click', resetAll);
+
+    function resetAll() {
+      currentFileData = null;
+      videoInfoBox.classList.add('hidden');
+      optionsPanel.classList.add('hidden');
+      resultPanel.classList.add('hidden');
+      dropzone.classList.remove('hidden');
+      videoInput.value = '';
+    }
+
+    btnStartCompress.addEventListener('click', async () => {
+      if (!currentFileData) return;
+
+      progressModal.classList.remove('hidden');
+      progressPct.textContent = '0%';
+      progressBarInner.style.width = '0%';
+
+      const payload = {
+        filename: currentFileData.filename,
+        mode: currentMode,
+        targetSizeMB: parseFloat(targetSizeNumber.value),
+        qualityPreset: selectedQualityPreset,
+        resolution: document.getElementById('res-select').value,
+        fpsPreset: document.getElementById('fps-select').value,
+        audioOption: document.getElementById('audio-select').value
+      };
+
+      try {
+        const res = await fetch('/api/compress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to start compression job');
+
+        const jobId = data.jobId;
+        const eventSource = new EventSource(`/api/compress/progress/${jobId}`);
+
+        eventSource.onmessage = (e) => {
+          const msg = JSON.parse(e.data);
+          if (msg.status === 'processing') {
+            const pct = Math.min(100, Math.max(0, msg.percent || 0));
+            progressPct.textContent = `${pct}%`;
+            progressBarInner.style.width = `${pct}%`;
+            progressSpeed.textContent = `${msg.speed || 1.0}x`;
+            progressFps.textContent = `${msg.fps || 0} fps`;
+          } else if (msg.status === 'completed') {
+            eventSource.close();
+            progressModal.classList.add('hidden');
+            showResult(msg);
+          } else if (msg.status === 'error') {
+            eventSource.close();
+            progressModal.classList.add('hidden');
+            alert(msg.error || 'Error processing video');
+          }
+        };
+
+        eventSource.onerror = () => {
+          eventSource.close();
+          progressModal.classList.add('hidden');
+          alert('Lost connection to compression server.');
+        };
+
+      } catch (err) {
+        progressModal.classList.add('hidden');
+        alert(err.message);
+      }
+    });
+
+    function showResult(result) {
+      optionsPanel.classList.add('hidden');
+      resultPanel.classList.remove('hidden');
+
+      const origMB = (currentFileData.size / (1024 * 1024)).toFixed(2) + ' MB';
+      resultOrigSize.textContent = origMB;
+      resultCompSize.textContent = result.compressedSizeFormatted;
+      resultSavedBadge.textContent = `-${result.reductionPercent}% Saved`;
+
+      outputFilename = result.outputFilename;
+      outputVideoPlayer.src = result.outputUrl;
+    }
+
+    btnDownload.addEventListener('click', () => {
+      if (outputFilename) {
+        window.location.href = `/api/download/${outputFilename}`;
+      }
+    });
+  </script>
+</body>
+</html>
