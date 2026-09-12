@@ -1016,6 +1016,8 @@
       }
     });
 
+    let downloadUrl = '';
+
     function showResult(result) {
       optionsPanel.classList.add('hidden');
       resultPanel.classList.remove('hidden');
@@ -1025,13 +1027,13 @@
       resultCompSize.textContent = result.compressedSizeFormatted;
       resultSavedBadge.textContent = `-${result.reductionPercent}% Saved`;
 
-      outputFilename = result.outputFilename;
-      outputVideoPlayer.src = result.outputUrl;
+      downloadUrl = result.downloadUrl || `/api/download/${result.jobId}`;
+      outputVideoPlayer.src = result.streamUrl || `/api/stream/${result.jobId}`;
     }
 
     btnDownload.addEventListener('click', () => {
-      if (outputFilename) {
-        window.location.href = `/api/download/${outputFilename}`;
+      if (downloadUrl) {
+        window.location.href = downloadUrl;
       }
     });
   </script>
