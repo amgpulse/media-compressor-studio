@@ -1,156 +1,92 @@
-# 🎬 Media Compressor Studio
+# Media Compressor Studio
 
-> A high-performance, developer-grade web application for intelligent video compression, target file sizing, and codec customization powered by native **FFmpeg** and **Node.js**.
+A Persian, right-to-left web interface for compressing video with FFmpeg. The React/Vite frontend talks to a local Node.js HTTP server that probes uploads, runs FFmpeg jobs, streams progress over Server-Sent Events (SSE), and serves the resulting MP4.
 
-[![Node.js Version](https://img.shields.io/badge/Node.js-v18%2B-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![FFmpeg Native](https://img.shields.io/badge/Engine-FFmpeg_Native-0078D4?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.style=for-the-badge?style=for-the-badge)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
+## Features
 
----
+- Compress toward a requested file size. The target is an estimate: a single-pass bitrate calculation cannot guarantee an exact output size.
+- Compress using quality presets, with optional resolution, frame-rate, and audio settings.
+- View upload metadata and compare the original video with the compressed result.
+- Follow encoding progress, speed, and frame rate over SSE.
+- Run the processing server locally; videos are not intentionally sent to a third-party cloud service.
 
-## ✨ Features
+## Requirements
 
-- **🎯 Target File Size Compression (Method 1):**
-  Specify exact target output file sizes (e.g., `10 MB` for email, `25 MB` for Telegram, `16 MB` for WhatsApp). The engine automatically probes media duration and calculates optimal video bitrates to hit the target file size with minimal quality loss.
+- Node.js 18 or newer and npm
+- FFmpeg, including `ffprobe`, available on `PATH`
 
-- **🎛️ Quality & Codec Control (Method 2):**
-  Fine-tune encoding parameters using Constant Rate Factor (CRF) presets:
-  - **High Quality (CRF 20):** Visually lossless quality with 20%-40% size reduction.
-  - **Balanced (CRF 25):** Recommended optimal size & clarity ratio.
-  - **High Compression (CRF 30):** Up to 85% reduction, ideal for fast web distribution.
-  - **Custom Scaling:** Downscale resolution to `1080p`, `720p`, `480p`, or `360p`.
-  - **Framerate & Audio Controls:** Adjust FPS (`30`, `24`, or Original) and audio bitrates (`128k`, `96k`, `64k`, or Mute).
+Check that both FFmpeg commands are available:
 
-- **⚡ Live Encoding Telemetry (SSE):**
-  Real-time progress streaming over Server-Sent Events (SSE) displaying live progress percentage, encoding speed factor (e.g., `3.5x`), active framerate (`fps`), and remaining duration.
-
-- **💎 Industrial Dark UI:**
-  Clean, high-density dashboard inspired by modern professional tools (Linear, Vercel Studio) featuring crisp typography, LTR alignment, and pixel-perfect SVG icons.
-
-- **🔒 Privacy-First & Local Hardware Acceleration:**
-  Processes video natively on your system using local FFmpeg CPU/GPU pipelines without transmitting videos to external third-party cloud servers.
-
----
-
-## 🧮 Bitrate Calculation Formula
-
-For target file size matching, the application computes the required video bitrate using the following equation:
-
-$$\text{Target Bitrate (kbps)} = \max\left(50, \frac{\text{Target File Size (MB)} \times 8192}{\text{Duration (seconds)}} - \text{Audio Bitrate (kbps)}\right)$$
-
-If the calculated video bitrate drops below quality thresholds for high resolutions, resolution scaling is dynamically applied to prevent compression artifacts.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-Ensure you have **Node.js (>= 18.0.0)** and **FFmpeg** installed on your operating system.
-
-#### Installing FFmpeg:
-- **Linux (Ubuntu/Debian):**
-  ```bash
-  sudo apt update && sudo apt install ffmpeg
-  ```
-- **macOS (Homebrew):**
-  ```bash
-  brew install ffmpeg
-  ```
-- **Windows (Chocolatey / Scoop):**
-  ```bash
-  choco install ffmpeg
-  ```
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/amgpulse/media-compressor-studio.git
-   cd media-compressor-studio
-   ```
-
-2. **Start the server:**
-   ```bash
-   node server/index.js
-   ```
-
-3. **Open in browser:**
-   Navigate to [http://localhost:5050](http://localhost:5050).
-
----
-
-## 📁 Project Structure
-
-```
-media-compressor-studio/
-├── public/                  # Static Web Assets & UI Shell
-│   └── index.html           # Standalone Single-Page Application (HTML/CSS/JS)
-├── server/                  # Backend Node.js Server & APIs
-│   ├── index.js             # HTTP Core Server & Server-Sent Events (SSE) Endpoint
-│   └── utils/
-│       └── ffmpeg.js        # FFmpeg Spawn Utilities & Probe Math
-├── uploads/                 # Temporary Upload Directory (Ignored in Git)
-├── outputs/                 # Transcoded Output Directory (Ignored in Git)
-└── README.md                # Project Documentation
+```sh
+ffmpeg -version
+ffprobe -version
 ```
 
----
+## Run locally
 
-## 🛠️ API Reference
+```sh
+npm install
+npm start
+```
 
-### 1. Upload Video & Probe Metadata
-`POST /api/upload` (Multipart Form-Data)
-- **Response:**
-  ```json
-  {
-    "filename": "video-1788527520.mp4",
-    "sizeFormatted": "48.50 MB",
-    "metadata": {
-      "duration": 124.5,
-      "width": 1920,
-      "height": 1080,
-      "codec": "h264",
-      "bitrate": 3200000
-    }
-  }
-  ```
+Open [http://localhost:3000](http://localhost:3000). The Vite development server proxies `/api` and `/uploads` requests to the Node.js server on port `5050`.
 
-### 2. Start Compression Job
-`POST /api/compress` (JSON)
-- **Payload:**
-  ```json
-  {
-    "filename": "video-1788527520.mp4",
-    "mode": "targetSize",
-    "targetSizeMB": 15
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "jobId": "job-1788527537031-466"
-  }
-  ```
+You can also run the two processes separately in different terminals:
 
-### 3. SSE Live Progress Stream
-`GET /api/compress/progress/:jobId` (EventSource)
+```sh
+npm run server
+npm run dev
+```
 
----
+To create and preview a production frontend build:
 
-## 🤝 Contributing
+```sh
+npm run build
+npm run preview
+```
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/your-username/media-compressor-studio/issues).
+The compression server is a separate process; `vite preview` serves only the frontend.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+## GitHub Pages demo
 
----
+The GitHub Actions workflow in `.github/workflows/deploy-pages.yml` publishes the frontend to GitHub Pages when changes are pushed to `main` (or when run manually). In the repository settings, enable **Settings → Pages → Build and deployment → Source → GitHub Actions**.
 
-## 📜 License
+GitHub Pages only hosts static files. Without a separately hosted Node.js/FFmpeg backend, the deployed page is a UI demo: upload, compression, progress, preview, and download require the backend and will not work.
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+When a backend is available:
+
+1. Add a repository Actions variable named `VITE_API_BASE_URL` with the backend's origin, for example `https://compressor-api.example.com` (no trailing slash).
+2. Configure that backend for public HTTPS access and allow the GitHub Pages origin through CORS.
+3. Trigger the workflow again. The frontend uses the variable for API calls and uploaded/compressed video URLs.
+
+Do not expose the current server directly to the public internet without adding appropriate upload limits, validation, resource controls, and access protections. It accepts unauthenticated requests and buffers uploads and compressed output in memory.
+
+## API overview
+
+The frontend uses these server routes:
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/upload` | Upload a video and return its metadata |
+| `POST` | `/api/compress` | Start a compression job and return its job ID |
+| `GET` | `/api/compress/progress/:jobId` | Receive job progress and completion over SSE |
+| `GET` | `/api/stream/:jobId` | Preview the compressed MP4 (supports byte ranges) |
+| `GET` | `/api/download/:jobId` | Download the compressed MP4 |
+
+The server defaults to port `5050`; set `PORT` to change it. Vite's development proxy is configured for this port.
+
+## Project layout
+
+```text
+src/                    React application and UI components
+server/index.js         Node.js HTTP API and job lifecycle
+server/utils/ffmpeg.js  ffprobe metadata and FFmpeg encoding helpers
+public/                 Static assets
+uploads/                Uploaded source videos (local server)
+outputs/                Reserved for generated output files
+.github/workflows/      GitHub Actions workflows
+```
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
