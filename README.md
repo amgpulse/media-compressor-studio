@@ -67,7 +67,7 @@ Ensure you have **Node.js (>= 18.0.0)** and **FFmpeg** installed on your operati
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/media-compressor-studio.git
+   git clone https://github.com/amgpulse/media-compressor-studio.git
    cd media-compressor-studio
    ```
 
