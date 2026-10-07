@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Download, ArrowRightLeft, Sparkles, CheckCircle2, RotateCcw, Share2 } from 'lucide-react';
-import { apiUrl } from '../utils/api';
 
 export default function VideoComparison({ originalFile, compressedResult, onReset }) {
   const [activeTab, setActiveTab] = useState('compressed'); // 'compressed' | 'original'
@@ -12,7 +11,7 @@ export default function VideoComparison({ originalFile, compressedResult, onRese
   const savedPercent = compressedResult.reductionPercent || 0;
 
   const handleDownload = () => {
-    window.location.href = apiUrl(compressedResult.downloadUrl);
+    window.location.href = compressedResult.downloadUrl;
   };
 
   return (
@@ -90,7 +89,7 @@ export default function VideoComparison({ originalFile, compressedResult, onRese
           {activeTab === 'compressed' ? (
             <video 
               key="compressed" 
-              src={apiUrl(compressedResult.streamUrl)}
+              src={compressedResult.streamUrl}
               controls 
               autoPlay
               style={{ width: '100%', maxHeight: '450px', objectFit: 'contain' }}
@@ -98,7 +97,7 @@ export default function VideoComparison({ originalFile, compressedResult, onRese
           ) : (
             <video 
               key="original" 
-              src={apiUrl(originalFile.filePath)}
+              src={originalFile.filePath}
               controls 
               style={{ width: '100%', maxHeight: '450px', objectFit: 'contain' }}
             />

@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, FileVideo, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
-import { apiUrl } from '../utils/api';
 
 export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -47,7 +46,7 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
 
     try {
       setUploadProgress(50);
-      const res = await fetch(apiUrl('/api/upload'), {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       });
@@ -111,7 +110,7 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
         {/* Video Preview */}
         <div style={{ marginTop: '20px', borderRadius: '12px', overflow: 'hidden', maxHeight: '260px', background: '#000' }}>
           <video 
-            src={apiUrl(selectedFile.filePath)}
+            src={selectedFile.filePath}
             controls 
             style={{ width: '100%', maxHeight: '260px', objectFit: 'contain' }}
           />

@@ -6,7 +6,6 @@ import TargetQualityMode from './components/TargetQualityMode';
 import ProgressModal from './components/ProgressModal';
 import VideoComparison from './components/VideoComparison';
 import { Target, Sliders, Play, AlertCircle } from 'lucide-react';
-import { apiUrl } from './utils/api';
 
 export default function App() {
   const [fileData, setFileData] = useState(null);
@@ -64,7 +63,7 @@ export default function App() {
         audioOption
       };
 
-      const res = await fetch(apiUrl('/api/compress'), {
+      const res = await fetch('/api/compress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -78,7 +77,7 @@ export default function App() {
       const jobId = data.jobId;
 
       // Subscribe to Server-Sent Events (SSE) progress
-      const eventSource = new EventSource(apiUrl(`/api/compress/progress/${jobId}`));
+      const eventSource = new EventSource(`/api/compress/progress/${jobId}`);
 
       eventSource.onmessage = (event) => {
         const msg = JSON.parse(event.data);
