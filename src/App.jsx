@@ -5,8 +5,8 @@ import TargetSizeMode from './components/TargetSizeMode';
 import TargetQualityMode from './components/TargetQualityMode';
 import ProgressModal from './components/ProgressModal';
 import VideoComparison from './components/VideoComparison';
+import { compressVideo } from './lib/compressor';
 import { Target, Sliders, Play, AlertCircle } from 'lucide-react';
-import { parseJsonResponse } from './utils/api';
 
 export default function App() {
   const [language, setLanguage] = useState(() => {
@@ -43,6 +43,8 @@ export default function App() {
 
   // Set default target size when file is uploaded (50% of original size)
   const handleFileUploaded = (data) => {
+    if (fileData?.filePath) URL.revokeObjectURL(fileData.filePath);
+    if (compressedResult?.url) URL.revokeObjectURL(compressedResult.url);
     setFileData(data);
     setCompressedResult(null);
     setError(null);
@@ -54,6 +56,8 @@ export default function App() {
   };
 
   const handleReset = () => {
+    if (fileData?.filePath) URL.revokeObjectURL(fileData.filePath);
+    if (compressedResult?.url) URL.revokeObjectURL(compressedResult.url);
     setFileData(null);
     setCompressedResult(null);
     setProgressData(null);
@@ -68,87 +72,36 @@ export default function App() {
     setProgressData({ percent: 0, speed: '1.0', fps: '0' });
 
     try {
-      const payload = {
-        filename: fileData.filename,
-        mode,
-        targetSizeMB: targetSize,
-        qualityPreset,
-        resolution,
-        fpsPreset,
-        audioOption
-      };
+      const result = await compressVideo(
+        {
+          file: fileData.file,
+          duration: fileData.metadata?.duration || 0,
+          mode,
+          targetSizeMB: targetSize,
+          qualityPreset,
+          resolution,
+          fpsPreset,
+          audioOption,
+        },
+        (progress) => setProgressData(progress)
+      );
 
-      const res = await fetch('/api/compress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const invalidResponseMessage = isEnglish
-        ? 'The server returned an empty or invalid response.'
-        : 'پاسخ سرور خالی یا نامعتبر است.';
-      const data = await parseJsonResponse(res, invalidResponseMessage);
-      if (!res.ok) {
-        throw new Error(data.error || (isEnglish ? 'Video compression failed.' : 'خطا در فشرده‌سازی ویدیو'));
-      }
-
-      if (typeof data.jobId !== 'string' || !data.jobId) {
-        throw new Error(invalidResponseMessage);
-      }
-      const jobId = data.jobId;
-
-      // Subscribe to Server-Sent Events (SSE) progress
-      const eventSource = new EventSource(`/api/compress/progress/${jobId}`);
-
-      eventSource.onmessage = (event) => {
-        let msg;
-        try {
-          msg = JSON.parse(event.data);
-        } catch (parseError) {
-          console.error('Invalid compression progress event:', parseError);
-          eventSource.close();
-          setIsCompressing(false);
-          setError(isEnglish
-            ? 'The server sent an invalid compression progress update.'
-            : 'وضعیت پیشرفت فشرده‌سازی از سرور نامعتبر است.');
-          return;
-        }
-
-        if (!msg || typeof msg !== 'object' || typeof msg.status !== 'string') {
-          eventSource.close();
-          setIsCompressing(false);
-          setError(isEnglish
-            ? 'The server sent an invalid compression progress update.'
-            : 'وضعیت پیشرفت فشرده‌سازی از سرور نامعتبر است.');
-          return;
-        }
-
-        if (msg.status === 'processing') {
-          setProgressData(msg);
-        } else if (msg.status === 'completed') {
-          eventSource.close();
-          setIsCompressing(false);
-          setCompressedResult(msg);
-        } else if (msg.status === 'error') {
-          eventSource.close();
-          setIsCompressing(false);
-          setError(msg.error || (isEnglish ? 'Video processing failed.' : 'خطا در پردازش ویدیو'));
-        }
-      };
-
-      eventSource.onerror = (err) => {
-        console.error('SSE Error:', err);
-        eventSource.close();
-        setIsCompressing(false);
-        setError(isEnglish
-          ? 'The connection to the server was lost while waiting for compression progress.'
-          : 'ارتباط با سرور برای دریافت وضعیت فشرده‌سازی قطع شد.');
-      };
-
+      setIsCompressing(false);
+      setProgressData(null);
+      setCompressedResult(result);
     } catch (err) {
       console.error(err);
       setIsCompressing(false);
-      setError(err.message || (isEnglish ? 'An error occurred while sending the request.' : 'خطایی در ارسال درخواست پیش آمد.'));
+      setProgressData(null);
+      setError(
+        err.message === 'INVALID_DURATION'
+          ? (isEnglish
+              ? 'Video duration could not be detected. Try the "Quality and resolution" method.'
+              : 'مدت زمان ویدیو قابل تشخیص نبود؛ روش «کیفیت و رزولوشن» را امتحان کنید.')
+          : (err.message || (isEnglish
+              ? 'An error occurred while compressing the video.'
+              : 'خطایی در حین فشرده‌سازی پیش آمد.'))
+      );
     }
   };
 

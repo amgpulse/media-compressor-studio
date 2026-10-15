@@ -37,13 +37,13 @@ export default function Header({ language, onToggleLanguage }) {
       
       <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', maxWidth: '650px', margin: '0 auto 18px' }}>
         {isEnglish
-          ? 'Smart video compression with minimal quality loss and full control over target size, quality, and resolution.'
-          : 'کاهش هوشمند حجم ویدیو بدون افت کیفیت محسوس با کنترل کامل بر روی حجم هدف یا کیفیت و رزولوشن'}
+          ? 'Smart video compression with minimal quality loss and full control over target size, quality, and resolution — fully offline, nothing is uploaded.'
+          : 'کاهش هوشمند حجم ویدیو بدون افت کیفیت محسوس با کنترل کامل بر روی حجم هدف یا کیفیت و رزولوشن — کاملاً آفلاین و بدون آپلود'}
       </p>
 
       <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
         <span className="badge badge-indigo">
-          <Zap size={14} /> {isEnglish ? 'Powered by FFmpeg' : 'پردازش با FFmpeg نیتیو'}
+          <Zap size={14} /> {isEnglish ? 'FFmpeg runs in your browser (WASM)' : 'اجرای FFmpeg داخل مرورگر (WASM)'}
         </span>
         <span className="badge badge-cyan">
           <Sparkles size={14} /> {isEnglish ? 'Smart H.264 encoding' : 'الگوریتم هوشمند H.264'}

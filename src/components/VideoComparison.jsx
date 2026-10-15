@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Download, ArrowRightLeft, Sparkles, CheckCircle2, RotateCcw, Share2 } from 'lucide-react';
+import { Download, Sparkles, CheckCircle2, RotateCcw } from 'lucide-react';
 
 export default function VideoComparison({ originalFile, compressedResult, onReset, language }) {
   const isEnglish = language === 'en';
@@ -8,11 +8,16 @@ export default function VideoComparison({ originalFile, compressedResult, onRese
   if (!compressedResult || !originalFile) return null;
 
   const originalMB = (originalFile.size / (1024 * 1024)).toFixed(2);
-  const compressedMB = compressedResult.compressedSizeFormatted || (compressedResult.compressedSize / (1024 * 1024)).toFixed(2) + ' MB';
+  const compressedMB = compressedResult.sizeFormatted || (compressedResult.size / (1024 * 1024)).toFixed(2) + ' MB';
   const savedPercent = compressedResult.reductionPercent || 0;
 
   const handleDownload = () => {
-    window.location.href = compressedResult.downloadUrl;
+    const link = document.createElement('a');
+    link.href = compressedResult.url;
+    link.download = compressedResult.filename || 'compressed.mp4';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   };
 
   return (

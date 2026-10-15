@@ -1,45 +1,46 @@
 # 🎬 Media Compressor Studio
 
-> A high-performance, developer-grade web application for intelligent video compression, target file sizing, and codec customization powered by native **FFmpeg** and **Node.js**.
+> A fully **offline**, client-side web application for intelligent video compression — target file sizing, CRF quality presets, scaling, FPS and audio control — powered entirely by **FFmpeg compiled to WebAssembly (ffmpeg.wasm)** running inside your browser.
 
-[![Node.js Version](https://img.shields.io/badge/Node.js-v18%2B-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![FFmpeg Native](https://img.shields.io/badge/Engine-FFmpeg_Native-0078D4?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpeg.org)
+[![FFmpeg WASM](https://img.shields.io/badge/Engine-FFmpeg_WASM-0078D4?style=for-the-badge&logo=ffmpeg&logoColor=white)](https://ffmpegwasm.github.io/)
+[![Offline](https://img.shields.io/badge/100%25-Offline-10b981?style=for-the-badge)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.style=for-the-badge?style=for-the-badge)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
+
+**No server. No upload. No API keys.** The video never leaves your machine: it is decoded, encoded and re-wrapped entirely in the browser.
 
 ---
 
 ## ✨ Features
 
 - **🎯 Target File Size Compression (Method 1):**
-  Specify exact target output file sizes (e.g., `10 MB` for email, `25 MB` for Telegram, `16 MB` for WhatsApp). The engine automatically probes media duration and calculates optimal video bitrates to hit the target file size with minimal quality loss.
+  Specify an exact target output size (e.g. `10 MB` for email, `25 MB` for Telegram, `16 MB` for WhatsApp). The engine probes the media duration and calculates the optimal video bitrate to hit the target with minimal quality loss, downscaling automatically when the bitrate would be too low for the current resolution.
 
 - **🎛️ Quality & Codec Control (Method 2):**
-  Fine-tune encoding parameters using Constant Rate Factor (CRF) presets:
-  - **High Quality (CRF 20):** Visually lossless quality with 20%-40% size reduction.
-  - **Balanced (CRF 25):** Recommended optimal size & clarity ratio.
-  - **High Compression (CRF 30):** Up to 85% reduction, ideal for fast web distribution.
-  - **Custom Scaling:** Downscale resolution to `1080p`, `720p`, `480p`, or `360p`.
-  - **Framerate & Audio Controls:** Adjust FPS (`30`, `24`, or Original) and audio bitrates (`128k`, `96k`, `64k`, or Mute).
+  Fine-tune encoding with Constant Rate Factor (CRF) presets:
+  - **High Quality (CRF 20):** near lossless output with 20%-40% size reduction.
+  - **Balanced (CRF 25):** recommended size / clarity ratio.
+  - **High Compression (CRF 30):** up to 85% reduction, ideal for fast sharing.
+  - **Custom Scaling:** downscale to `1080p`, `720p`, `480p` or `360p`.
+  - **Framerate & Audio:** `30`, `24` or original FPS; audio at `128k`, `96k`, `64k` or muted.
 
-- **⚡ Live Encoding Telemetry (SSE):**
-  Real-time progress streaming over Server-Sent Events (SSE) displaying live progress percentage, encoding speed factor (e.g., `3.5x`), active framerate (`fps`), and remaining duration.
+- **⚡ Live Encoding Telemetry:**
+  Real-time progress, encoding speed factor (e.g. `3.5x`) and active framerate streamed straight from the FFmpeg WebAssembly runtime.
+
+- **🔒 Privacy-First:**
+  Nothing is ever transmitted. Close the tab and every intermediate file disappears.
 
 - **💎 Industrial Dark UI:**
-  Clean, high-density dashboard inspired by modern professional tools (Linear, Vercel Studio) featuring crisp typography, LTR alignment, and pixel-perfect SVG icons.
-
-- **🔒 Privacy-First & Local Hardware Acceleration:**
-  Processes video natively on your system using local FFmpeg CPU/GPU pipelines without transmitting videos to external third-party cloud servers.
+  Clean, high-density dashboard in RTL Persian with crisp typography and pixel-perfect SVG icons.
 
 ---
 
 ## 🧮 Bitrate Calculation Formula
 
-For target file size matching, the application computes the required video bitrate using the following equation:
+For target file size matching, the required video bitrate is computed as:
 
 $$\text{Target Bitrate (kbps)} = \max\left(50, \frac{\text{Target File Size (MB)} \times 8192}{\text{Duration (seconds)}} - \text{Audio Bitrate (kbps)}\right)$$
 
-If the calculated video bitrate drops below quality thresholds for high resolutions, resolution scaling is dynamically applied to prevent compression artifacts.
+If the calculated bitrate drops below quality thresholds for the current resolution, the resolution is scaled down dynamically to avoid heavy compression artifacts.
 
 ---
 
@@ -47,40 +48,40 @@ If the calculated video bitrate drops below quality thresholds for high resoluti
 
 ### Prerequisites
 
-Ensure you have **Node.js (>= 18.0.0)** and **FFmpeg** installed on your operating system.
+- **Node.js >= 18**
+- A modern browser with WebAssembly support (Chrome, Edge, Firefox, Safari 15+)
 
-#### Installing FFmpeg:
-- **Linux (Ubuntu/Debian):**
-  ```bash
-  sudo apt update && sudo apt install ffmpeg
-  ```
-- **macOS (Homebrew):**
-  ```bash
-  brew install ffmpeg
-  ```
-- **Windows (Chocolatey / Scoop):**
-  ```bash
-  choco install ffmpeg
-  ```
+No FFmpeg installation is required — the codec runs in the browser.
 
-### Installation
+> Note: `npm install` copies the FFmpeg core (`~32 MB`) from `node_modules/@ffmpeg/core` into `public/ffmpeg/` so the app stays fully offline.
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/amgpulse/media-compressor-studio.git
-   cd media-compressor-studio
-   ```
+### Local development
 
-2. **Install dependencies and start the frontend and server:**
-   ```bash
-   npm install
-   npm run start
-   ```
+```bash
+git clone https://github.com/amgpulse/media-compressor-studio.git
+cd media-compressor-studio
+npm install
+npm run dev
+```
 
-3. **Open in browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000).
 
-The development server proxies API, upload, and video requests to the backend on port `5050`. Install FFmpeg and ffprobe and make sure both commands are available on your `PATH`.
+### Production build
+
+```bash
+npm run build     # copies ffmpeg core + builds to dist/
+npm run preview   # serves the production build locally
+```
+
+---
+
+## 🌐 Deploying to GitHub Pages
+
+1. Push the repository to GitHub.
+2. In **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**.
+3. Every push to `main` / `master` runs `.github/workflows/deploy.yml`, which builds the app and publishes `dist/`.
+
+The site is served from the repository path, so the Vite base is set to `'./'` (relative) and works on any repository name without configuration.
 
 ---
 
@@ -88,68 +89,49 @@ The development server proxies API, upload, and video requests to the backend on
 
 ```
 media-compressor-studio/
-├── public/                  # Static Web Assets & UI Shell
-│   └── index.html           # Standalone Single-Page Application (HTML/CSS/JS)
-├── server/                  # Backend Node.js Server & APIs
-│   ├── index.js             # HTTP Core Server & Server-Sent Events (SSE) Endpoint
-│   └── utils/
-│       └── ffmpeg.js        # FFmpeg Spawn Utilities & Probe Math
-├── uploads/                 # Temporary Upload Directory (Ignored in Git)
-├── outputs/                 # Transcoded Output Directory (Ignored in Git)
-└── README.md                # Project Documentation
+├── .github/workflows/
+│   └── deploy.yml            # Builds and deploys to GitHub Pages
+├── public/
+│   ├── favicon.svg
+│   └── ffmpeg/               # ffmpeg-core.js + .wasm (generated, git-ignored)
+├── scripts/
+│   └── copy-ffmpeg-core.mjs  # Copies the WASM core from node_modules
+├── src/
+│   ├── components/           # React UI components
+│   └── lib/
+│       ├── ffmpeg.js         # FFmpeg WebAssembly loader (singleton)
+│       ├── compressor.js     # Argument building + progress parsing
+│       └── metadata.js       # Local video probing (duration, resolution)
+├── index.html
+├── vite.config.js
+└── README.md
 ```
 
 ---
 
-## 🛠️ API Reference
+## ⚙️ How It Works
 
-### 1. Upload Video & Probe Metadata
-`POST /api/upload` (Multipart Form-Data)
-- **Response:**
-  ```json
-  {
-    "filename": "video-1788527520.mp4",
-    "sizeFormatted": "48.50 MB",
-    "metadata": {
-      "duration": 124.5,
-      "width": 1920,
-      "height": 1080,
-      "codec": "h264",
-      "bitrate": 3200000
-    }
-  }
-  ```
+1. **Probe:** the selected file is loaded into a detached `<video>` element to read duration and dimensions — no decoding happens yet.
+2. **Load:** on the first compression, `ffmpeg-core.js` / `ffmpeg-core.wasm` are fetched from the same origin and instantiated inside a Web Worker.
+3. **Encode:** the file is written to the in-memory filesystem, the FFmpeg command built by `src/lib/compressor.js` is executed, and stderr telemetry (`time=`, `speed=`, `fps=`) is parsed to drive the progress UI.
+4. **Result:** the output is read back as bytes, turned into a Blob URL for preview and download, then deleted from memory.
 
-### 2. Start Compression Job
-`POST /api/compress` (JSON)
-- **Payload:**
-  ```json
-  {
-    "filename": "video-1788527520.mp4",
-    "mode": "targetSize",
-    "targetSizeMB": 15
-  }
-  ```
-- **Response:**
-  ```json
-  {
-    "jobId": "job-1788527537031-466"
-  }
-  ```
+### Limits
 
-### 3. SSE Live Progress Stream
-`GET /api/compress/progress/:jobId` (EventSource)
+- Input files are limited to **1 GB**: the whole pipeline runs in browser memory.
+- WebAssembly encoding is slower than native FFmpeg; `preset fast` / `medium` keep the wait reasonable.
+- Container formats supported for input: MP4, MKV, MOV, AVI, WEBM (whatever the browser can decode plus what FFmpeg can demux). Output is always H.264 + AAC in MP4.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/your-username/media-compressor-studio/issues).
+Contributions, issues and feature requests are welcome! Feel free to open an [issue](https://github.com/amgpulse/media-compressor-studio/issues).
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
 ---

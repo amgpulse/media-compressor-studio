@@ -1,12 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { UploadCloud, FileVideo, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
-import { parseJsonResponse } from '../utils/api';
+import { UploadCloud, FileVideo, AlertCircle, RefreshCw, ShieldCheck } from 'lucide-react';
+import { probeVideo, formatSize, formatDuration } from '../lib/metadata';
 
 export default function UploadZone({ onFileUploaded, selectedFile, onReset, language }) {
   const isEnglish = language === 'en';
   const [isDragging, setIsDragging] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -42,38 +41,31 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset, lang
       return;
     }
 
-    setIsUploading(true);
-    setUploadProgress(20);
+    if (file.size > 1024 * 1024 * 1024) {
+      setError(isEnglish
+        ? 'The file is larger than 1 GB. Processing it in browser memory may fail.'
+        : 'حجم فایل بیشتر از ۱ گیگابایت است. پردازش در حافظه مرورگر ممکن است ناموفق باشد.');
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append('video', file);
+    setIsAnalyzing(true);
 
     try {
-      setUploadProgress(50);
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
+      const metadata = await probeVideo(file);
+
+      onFileUploaded({
+        file,
+        originalName: file.name,
+        filePath: URL.createObjectURL(file),
+        size: file.size,
+        sizeFormatted: formatSize(file.size),
+        metadata: { ...metadata, durationLabel: formatDuration(metadata.duration) },
       });
-
-      setUploadProgress(85);
-      const data = await parseJsonResponse(
-        res,
-        isEnglish ? 'The server returned an empty or invalid response.' : 'پاسخ سرور خالی یا نامعتبر است.'
-      );
-
-      if (!res.ok) {
-        throw new Error(data.error || (isEnglish ? 'Video upload failed.' : 'خطا در آپلود ویدیو'));
-      }
-
-      setUploadProgress(100);
-      setTimeout(() => {
-        setIsUploading(false);
-        onFileUploaded(data);
-      }, 300);
     } catch (err) {
       console.error(err);
-      setError(err.message || (isEnglish ? 'An error occurred while uploading the file.' : 'خطایی در آپلود فایل رخ داد.'));
-      setIsUploading(false);
+      setError(err.message || (isEnglish ? 'An error occurred while reading the file.' : 'خطایی در خواندن فایل رخ داد.'));
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -170,20 +162,35 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset, lang
         </h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '16px' }}>
           {isEnglish
-            ? 'or click to browse (MP4, MKV, MOV, WEBM up to 2 GB)'
-            : 'یا برای انتخاب فایل کلیک کنید (پشتیبانی از MP4, MKV, MOV, WEBM تا ۲ گیگابایت)'}
+            ? 'or click to browse (MP4, MKV, MOV, WEBM up to 1 GB)'
+            : 'یا برای انتخاب فایل کلیک کنید (پشتیبانی از MP4, MKV, MOV, WEBM تا ۱ گیگابایت)'}
         </p>
 
-        {isUploading && (
+        {isAnalyzing && (
           <div style={{ maxWidth: '300px', margin: '16px auto 0' }}>
             <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${uploadProgress}%`, background: 'var(--primary)', transition: 'width 0.2s ease' }} />
+              <div style={{ height: '100%', width: '70%', background: 'var(--primary)', transition: 'width 0.2s ease' }} />
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-              {isEnglish ? 'Uploading and analyzing video...' : 'در حال آپلود و تحلیل ویدیو...'} {uploadProgress}%
+              {isEnglish ? 'Analyzing video...' : 'در حال تحلیل ویدیو...'}
             </p>
           </div>
         )}
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
+          marginTop: '20px',
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem'
+        }}>
+          <ShieldCheck size={16} color="var(--accent-emerald)" />
+          {isEnglish
+            ? 'Processing is fully offline; no file is ever uploaded'
+            : 'پردازش کاملاً آفلاین است؛ هیچ فایلی به سرور ارسال نمی‌شود'}
+        </div>
       </div>
 
       {error && (
