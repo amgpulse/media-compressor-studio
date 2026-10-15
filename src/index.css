@@ -29,6 +29,10 @@
   font-family: 'Vazirmatn', 'Outfit', system-ui, -apple-system, sans-serif;
 }
 
+html[lang="en"] * {
+  font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
 body {
   background-color: var(--bg-dark);
   background-image: 
@@ -38,8 +42,14 @@ body {
   background-attachment: fixed;
   color: var(--text-main);
   min-height: 100vh;
-  direction: rtl;
   overflow-x: hidden;
+}
+
+.language-toggle {
+  position: absolute;
+  inset-block-start: 20px;
+  inset-inline-end: 0;
+  padding: 9px 14px;
 }
 
 /* Glassmorphism Container */

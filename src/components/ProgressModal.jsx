@@ -1,7 +1,8 @@
 import React from 'react';
 import { Loader2, Cpu, Zap, Activity } from 'lucide-react';
 
-export default function ProgressModal({ progressData }) {
+export default function ProgressModal({ progressData, language }) {
+  const isEnglish = language === 'en';
   const percent = progressData ? Math.min(100, Math.max(0, progressData.percent || 0)) : 0;
   const speed = progressData?.speed || '1.0';
   const fps = progressData?.fps || '0';
@@ -47,10 +48,12 @@ export default function ProgressModal({ progressData }) {
         `}</style>
 
         <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'white', marginBottom: '8px' }}>
-          در حال فشرده‌سازی ویدیو...
+          {isEnglish ? 'Compressing your video...' : 'در حال فشرده‌سازی ویدیو...'}
         </h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px' }}>
-          موتور FFmpeg در حال انکود و بهینه‌سازی فرمت ویدیو است
+          {isEnglish
+            ? 'FFmpeg is encoding and optimizing your video.'
+            : 'موتور FFmpeg در حال انکود و بهینه‌سازی فرمت ویدیو است'}
         </p>
 
         {/* Big Percentage Number */}
@@ -88,12 +91,16 @@ export default function ProgressModal({ progressData }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
             <Zap size={16} color="var(--accent-cyan)" />
-            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>سرعت: <strong>{speed}x</strong></span>
+            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+              {isEnglish ? 'Speed:' : 'سرعت:'} <strong>{speed}x</strong>
+            </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
             <Activity size={16} color="var(--accent-emerald)" />
-            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>نرخ: <strong>{fps} fps</strong></span>
+            <span style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+              {isEnglish ? 'Frame rate:' : 'نرخ:'} <strong>{fps} fps</strong>
+            </span>
           </div>
         </div>
       </div>

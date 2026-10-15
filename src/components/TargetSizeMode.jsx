@@ -1,9 +1,10 @@
 import React from 'react';
 import { HardDrive, Send, Mail, Share2, Info } from 'lucide-react';
 
-export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) {
+export default function TargetSizeMode({ fileData, targetSize, setTargetSize, language }) {
   if (!fileData) return null;
 
+  const isEnglish = language === 'en';
   const originalMB = fileData.size / (1024 * 1024);
   const duration = fileData.metadata?.duration || 1;
 
@@ -29,10 +30,10 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
         <div>
           <label style={{ fontSize: '1.1rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <HardDrive size={18} color="var(--primary)" />
-            حجم هدف ویدیو پس از فشرده‌سازی:
+            {isEnglish ? 'Target video size after compression:' : 'حجم هدف ویدیو پس از فشرده‌سازی:'}
           </label>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginTop: '4px' }}>
-            حجم ویدیو ورودی: {originalMB.toFixed(1)} مگابایت
+            {isEnglish ? 'Input video size:' : 'حجم ویدیو ورودی:'} {originalMB.toFixed(1)} MB
           </p>
         </div>
 
@@ -63,7 +64,7 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
               outline: 'none'
             }}
           />
-          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>مگابایت (MB)</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>{isEnglish ? 'Megabytes (MB)' : 'مگابایت (MB)'}</span>
         </div>
       </div>
 
@@ -78,16 +79,16 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
           onChange={(e) => setTargetSize(parseFloat(e.target.value))}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-dim)', fontSize: '0.85rem', marginTop: '6px' }}>
-          <span>۱ مگابایت</span>
-          <span>{Math.round(originalMB / 2)} مگابایت (۵۰٪)</span>
-          <span>{originalMB.toFixed(1)} مگابایت (حجم اولیه)</span>
+          <span>{isEnglish ? '1 MB' : '۱ مگابایت'}</span>
+          <span>{Math.round(originalMB / 2)} MB ({isEnglish ? '50%' : '۵۰٪'})</span>
+          <span>{originalMB.toFixed(1)} MB ({isEnglish ? 'original size' : 'حجم اولیه'})</span>
         </div>
       </div>
 
       {/* Quick Presets */}
       <div>
         <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', display: 'block', marginBottom: '10px' }}>
-          میان‌برهای محبوب (کلیک کنید):
+          {isEnglish ? 'Quick presets (click to apply):' : 'میان‌برهای محبوب (کلیک کنید):'}
         </span>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button 
@@ -96,7 +97,7 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
             style={{ fontSize: '0.88rem', padding: '8px 14px' }}
             onClick={() => handlePreset(10)}
           >
-            <Mail size={14} /> ۱۰ مگابایت (ارسال ایمیل)
+            <Mail size={14} /> {isEnglish ? '10 MB (Email)' : '۱۰ مگابایت (ارسال ایمیل)'}
           </button>
           
           <button 
@@ -105,7 +106,7 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
             style={{ fontSize: '0.88rem', padding: '8px 14px' }}
             onClick={() => handlePreset(25)}
           >
-            <Send size={14} /> ۲۵ مگابایت (حد تلگرام)
+            <Send size={14} /> {isEnglish ? '25 MB (Telegram limit)' : '۲۵ مگابایت (حد تلگرام)'}
           </button>
 
           <button 
@@ -114,7 +115,7 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
             style={{ fontSize: '0.88rem', padding: '8px 14px' }}
             onClick={() => handlePreset(16)}
           >
-            <Share2 size={14} /> ۱۶ مگابایت (واتساپ)
+            <Share2 size={14} /> {isEnglish ? '16 MB (WhatsApp)' : '۱۶ مگابایت (واتساپ)'}
           </button>
 
           <button 
@@ -123,7 +124,7 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
             style={{ fontSize: '0.88rem', padding: '8px 14px' }}
             onClick={() => handlePreset(originalMB * 0.5)}
           >
-            ۵۰٪ حجم اولیه
+            {isEnglish ? '50% of original' : '۵۰٪ حجم اولیه'}
           </button>
         </div>
       </div>
@@ -142,10 +143,14 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
       }}>
         <div>
           <span style={{ color: 'var(--accent-emerald)', fontWeight: 700, fontSize: '1.05rem', display: 'block' }}>
-            میزان فشرده‌سازی تخمینی: {reductionPercentage}٪ صرفه‌جویی
+            {isEnglish
+              ? `Estimated compression: ${reductionPercentage}% saved`
+              : `میزان فشرده‌سازی تخمینی: ${reductionPercentage}٪ صرفه‌جویی`}
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            کاهش از {originalMB.toFixed(1)} مگابایت به {targetSize} مگابایت (کاهش {reduction.toFixed(1)} مگابایت)
+            {isEnglish
+              ? `From ${originalMB.toFixed(1)} MB to ${targetSize} MB (saving ${reduction.toFixed(1)} MB)`
+              : `کاهش از ${originalMB.toFixed(1)} مگابایت به ${targetSize} مگابایت (کاهش ${reduction.toFixed(1)} مگابایت)`}
           </span>
         </div>
 
@@ -167,7 +172,11 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize }) 
           gap: '8px'
         }}>
           <Info size={18} />
-          <span>توجه: حجم درخواستی نسبت به مدت زمان ویدیو کم است. رزولوشن به صورت خودکار تغییر می‌کند تا کیفیت تصویر افت شدید نکند.</span>
+          <span>
+            {isEnglish
+              ? 'The target size is small for this video duration. Resolution will be reduced automatically to avoid a severe quality loss.'
+              : 'توجه: حجم درخواستی نسبت به مدت زمان ویدیو کم است. رزولوشن به صورت خودکار تغییر می‌کند تا کیفیت تصویر افت شدید نکند.'}
+          </span>
         </div>
       )}
     </div>

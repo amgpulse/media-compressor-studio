@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, FileVideo, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { parseJsonResponse } from '../utils/api';
 
-export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
+export default function UploadZone({ onFileUploaded, selectedFile, onReset, language }) {
+  const isEnglish = language === 'en';
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -34,7 +36,9 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
   const handleFile = async (file) => {
     setError(null);
     if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|mkv|mov|avi|webm|flv|wmv)$/i)) {
-      setError('لطفاً یک فایل ویدیویی معتبر (MP4, MKV, MOV, AVI, WEBM) انتخاب کنید.');
+      setError(isEnglish
+        ? 'Please choose a valid video file (MP4, MKV, MOV, AVI, or WEBM).'
+        : 'لطفاً یک فایل ویدیویی معتبر (MP4, MKV, MOV, AVI, WEBM) انتخاب کنید.');
       return;
     }
 
@@ -52,10 +56,13 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
       });
 
       setUploadProgress(85);
-      const data = await res.json();
+      const data = await parseJsonResponse(
+        res,
+        isEnglish ? 'The server returned an empty or invalid response.' : 'پاسخ سرور خالی یا نامعتبر است.'
+      );
 
       if (!res.ok) {
-        throw new Error(data.error || 'خطا در آپلود ویدیو');
+        throw new Error(data.error || (isEnglish ? 'Video upload failed.' : 'خطا در آپلود ویدیو'));
       }
 
       setUploadProgress(100);
@@ -65,7 +72,7 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
       }, 300);
     } catch (err) {
       console.error(err);
-      setError(err.message || 'خطایی در آپلود فایل رخ داد.');
+      setError(err.message || (isEnglish ? 'An error occurred while uploading the file.' : 'خطایی در آپلود فایل رخ داد.'));
       setIsUploading(false);
     }
   };
@@ -93,17 +100,17 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
                 {selectedFile.originalName}
               </h3>
               <div style={{ display: 'flex', gap: '12px', color: 'var(--text-muted)', fontSize: '0.9rem', flexWrap: 'wrap' }}>
-                <span>حجم اولیه: <strong style={{ color: '#6366f1' }}>{selectedFile.sizeFormatted}</strong></span>
+                <span>{isEnglish ? 'Original size:' : 'حجم اولیه:'} <strong style={{ color: '#6366f1' }}>{selectedFile.sizeFormatted}</strong></span>
                 <span>•</span>
-                <span>مدت زمان: <strong>{durationMin}:{durationSec < 10 ? '0' : ''}{durationSec}</strong></span>
+                <span>{isEnglish ? 'Duration:' : 'مدت زمان:'} <strong>{durationMin}:{durationSec < 10 ? '0' : ''}{durationSec}</strong></span>
                 <span>•</span>
-                <span>ابعاد: <strong>{meta.width}x{meta.height}</strong></span>
+                <span>{isEnglish ? 'Dimensions:' : 'ابعاد:'} <strong>{meta.width}x{meta.height}</strong></span>
               </div>
             </div>
           </div>
 
-          <button onClick={onReset} className="btn-secondary" title="انتخاب ویدیوی دیگر">
-            <RefreshCw size={16} /> تغییر ویدیو
+          <button onClick={onReset} className="btn-secondary" title={isEnglish ? 'Choose another video' : 'انتخاب ویدیوی دیگر'}>
+            <RefreshCw size={16} /> {isEnglish ? 'Change video' : 'تغییر ویدیو'}
           </button>
         </div>
 
@@ -159,10 +166,12 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
         </div>
 
         <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '8px' }}>
-          ویدیو خود را کشیده و اینجا رها کنید
+          {isEnglish ? 'Drag and drop your video here' : 'ویدیو خود را کشیده و اینجا رها کنید'}
         </h3>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginBottom: '16px' }}>
-          یا برای انتخاب فایل کلیک کنید (پشتیبانی از MP4, MKV, MOV, WEBM تا ۲ گیگابایت)
+          {isEnglish
+            ? 'or click to browse (MP4, MKV, MOV, WEBM up to 2 GB)'
+            : 'یا برای انتخاب فایل کلیک کنید (پشتیبانی از MP4, MKV, MOV, WEBM تا ۲ گیگابایت)'}
         </p>
 
         {isUploading && (
@@ -170,7 +179,9 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset }) {
             <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '3px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${uploadProgress}%`, background: 'var(--primary)', transition: 'width 0.2s ease' }} />
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>در حال آپلود و تحلیل ویدیو... {uploadProgress}%</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+              {isEnglish ? 'Uploading and analyzing video...' : 'در حال آپلود و تحلیل ویدیو...'} {uploadProgress}%
+            </p>
           </div>
         )}
       </div>

@@ -5,20 +5,38 @@ export default function TargetQualityMode({
   qualityPreset, setQualityPreset,
   resolution, setResolution,
   fpsPreset, setFpsPreset,
-  audioOption, setAudioOption
+  audioOption, setAudioOption,
+  language
 }) {
+  const isEnglish = language === 'en';
   const presets = [
-    { id: 'high', name: 'کیفیت بالا', crf: 'CRF 20', desc: 'کاهش حجم ملایم (حفظ حداکثر جزییات تصویر)', tag: 'افت کیفیت تقریباً صفر' },
-    { id: 'medium', name: 'متعادل (پیشنهادی)', crf: 'CRF 25', desc: 'توازن عالی بین حجم کم و کیفیت بالا', tag: 'صرفه‌جویی ۵۰٪ تا ۷۰٪', recommended: true },
-    { id: 'low', name: 'فشرده‌سازی زیاد', crf: 'CRF 30', desc: 'کاهش شدید حجم مناسب ارسال سریع در پیام‌رسان‌ها', tag: 'صرفه‌جویی ۷۰٪ تا ۸۵٪' }
+    {
+      id: 'high',
+      name: isEnglish ? 'High quality' : 'کیفیت بالا',
+      desc: isEnglish ? 'Light compression that preserves image detail' : 'کاهش حجم ملایم (حفظ حداکثر جزییات تصویر)',
+      tag: isEnglish ? 'Almost no visible quality loss' : 'افت کیفیت تقریباً صفر'
+    },
+    {
+      id: 'medium',
+      name: isEnglish ? 'Balanced (recommended)' : 'متعادل (پیشنهادی)',
+      desc: isEnglish ? 'An excellent balance of file size and quality' : 'توازن عالی بین حجم کم و کیفیت بالا',
+      tag: isEnglish ? '50%–70% size reduction' : 'صرفه‌جویی ۵۰٪ تا ۷۰٪',
+      recommended: true
+    },
+    {
+      id: 'low',
+      name: isEnglish ? 'High compression' : 'فشرده‌سازی زیاد',
+      desc: isEnglish ? 'Large size reduction for quick sharing' : 'کاهش شدید حجم مناسب ارسال سریع در پیام‌رسان‌ها',
+      tag: isEnglish ? '70%–85% size reduction' : 'صرفه‌جویی ۷۰٪ تا ۸۵٪'
+    }
   ];
 
   const resolutions = [
-    { id: 'original', label: 'رزولوشن اصلی' },
+    { id: 'original', label: isEnglish ? 'Original resolution' : 'رزولوشن اصلی' },
     { id: '1080', label: '1080p (Full HD)' },
     { id: '720', label: '720p (HD)' },
     { id: '480', label: '480p (SD)' },
-    { id: '360', label: '360p (موبایل)' }
+    { id: '360', label: isEnglish ? '360p (Mobile)' : '360p (موبایل)' }
   ];
 
   return (
@@ -27,7 +45,7 @@ export default function TargetQualityMode({
       <div>
         <label style={{ fontSize: '1.05rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
           <Sliders size={18} color="var(--primary)" />
-          سطح کیفیت تصویر (Quality Preset):
+          {isEnglish ? 'Video quality preset:' : 'سطح کیفیت تصویر (Quality Preset):'}
         </label>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
@@ -47,7 +65,7 @@ export default function TargetQualityMode({
             >
               {p.recommended && (
                 <span className="badge badge-emerald" style={{ position: 'absolute', top: '-10px', left: '12px', fontSize: '0.75rem' }}>
-                  <Sparkles size={12} /> پیشنهادی
+                  <Sparkles size={12} /> {isEnglish ? 'Recommended' : 'پیشنهادی'}
                 </span>
               )}
 
@@ -72,7 +90,7 @@ export default function TargetQualityMode({
         <div style={{ background: 'rgba(15, 23, 42, 0.4)', padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
           <label style={{ fontSize: '0.95rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <Monitor size={16} color="var(--accent-cyan)" />
-            تغییر ابعاد / رزولوشن:
+            {isEnglish ? 'Resolution:' : 'تغییر ابعاد / رزولوشن:'}
           </label>
           <select 
             value={resolution}
@@ -99,7 +117,7 @@ export default function TargetQualityMode({
         <div style={{ background: 'rgba(15, 23, 42, 0.4)', padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
           <label style={{ fontSize: '0.95rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <Film size={16} color="var(--accent-emerald)" />
-            نرخ فریم (FPS):
+            {isEnglish ? 'Frame rate (FPS):' : 'نرخ فریم (FPS):'}
           </label>
           <select 
             value={fpsPreset}
@@ -116,9 +134,9 @@ export default function TargetQualityMode({
               cursor: 'pointer'
             }}
           >
-            <option value="original">فریم‌ریت اصلی فایل</option>
-            <option value="30">۳۰ فریم بر ثانیه (استاندارد)</option>
-            <option value="24">۲۴ فریم بر ثانیه (سینمایی)</option>
+            <option value="original">{isEnglish ? 'Original frame rate' : 'فریم‌ریت اصلی فایل'}</option>
+            <option value="30">{isEnglish ? '30 fps (Standard)' : '۳۰ فریم بر ثانیه (استاندارد)'}</option>
+            <option value="24">{isEnglish ? '24 fps (Cinematic)' : '۲۴ فریم بر ثانیه (سینمایی)'}</option>
           </select>
         </div>
 
@@ -126,7 +144,7 @@ export default function TargetQualityMode({
         <div style={{ background: 'rgba(15, 23, 42, 0.4)', padding: '16px', borderRadius: '14px', border: '1px solid var(--border-color)' }}>
           <label style={{ fontSize: '0.95rem', fontWeight: 600, color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
             <Volume2 size={16} color="#f43f5e" />
-            کیفیت صدا:
+            {isEnglish ? 'Audio quality:' : 'کیفیت صدا:'}
           </label>
           <select 
             value={audioOption}
@@ -143,10 +161,10 @@ export default function TargetQualityMode({
               cursor: 'pointer'
             }}
           >
-            <option value="128k">۱۲۸ کیلوبیت (کیفیت بالا)</option>
-            <option value="96k">۹۶ کیلوبیت (استاندارد)</option>
-            <option value="64k">۶۴ کیلوبیت (فشرده)</option>
-            <option value="mute">حذف کامل صدا (بدون صدا)</option>
+            <option value="128k">{isEnglish ? '128 kbps (High quality)' : '۱۲۸ کیلوبیت (کیفیت بالا)'}</option>
+            <option value="96k">{isEnglish ? '96 kbps (Standard)' : '۹۶ کیلوبیت (استاندارد)'}</option>
+            <option value="64k">{isEnglish ? '64 kbps (Compressed)' : '۶۴ کیلوبیت (فشرده)'}</option>
+            <option value="mute">{isEnglish ? 'Remove audio' : 'حذف کامل صدا (بدون صدا)'}</option>
           </select>
         </div>
       </div>
