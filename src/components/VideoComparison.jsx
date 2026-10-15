@@ -95,7 +95,7 @@ export default function VideoComparison({ originalFile, compressedResult, onRese
           {activeTab === 'compressed' ? (
             <video 
               key="compressed" 
-              src={compressedResult.streamUrl}
+              src={compressedResult.url}
               controls 
               autoPlay
               style={{ width: '100%', maxHeight: '450px', objectFit: 'contain' }}

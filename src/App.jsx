@@ -50,7 +50,11 @@ export default function App() {
     setError(null);
     if (data && data.size) {
       const originalMB = data.size / (1024 * 1024);
-      const defaultTarget = Math.max(1, parseFloat((originalMB * 0.4).toFixed(1)));
+      const minTargetMB = Math.min(originalMB < 1 ? 0.001 : 0.1, originalMB);
+      const defaultTarget = Math.min(
+        originalMB,
+        Math.max(minTargetMB, parseFloat((originalMB * 0.4).toFixed(originalMB < 1 ? 3 : 1)))
+      );
       setTargetSize(defaultTarget);
     }
   };

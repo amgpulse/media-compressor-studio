@@ -9,8 +9,7 @@ const outDir = join(root, 'public', 'ffmpeg');
 const files = ['ffmpeg-core.js', 'ffmpeg-core.wasm'];
 
 if (!existsSync(srcDir)) {
-  console.warn('[ffmpeg-core] node_modules/@ffmpeg/core/dist/esm not found, skipping copy.');
-  process.exit(0);
+  throw new Error('[ffmpeg-core] node_modules/@ffmpeg/core/dist/esm not found. Install dependencies before building.');
 }
 
 mkdirSync(outDir, { recursive: true });
@@ -18,7 +17,9 @@ mkdirSync(outDir, { recursive: true });
 for (const file of files) {
   const src = join(srcDir, file);
   const dest = join(outDir, file);
-  if (!existsSync(src)) continue;
+  if (!existsSync(src)) {
+    throw new Error(`[ffmpeg-core] Required file not found: ${src}`);
+  }
   if (existsSync(dest) && statSync(dest).mtimeMs >= statSync(src).mtimeMs) continue;
   copyFileSync(src, dest);
   console.log(`[ffmpeg-core] copied ${file} -> public/ffmpeg/`);

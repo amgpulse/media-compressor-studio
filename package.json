@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "node scripts/copy-ffmpeg-core.mjs && vite build",
     "preview": "vite preview",
+    "test": "node --test",
     "postinstall": "node scripts/copy-ffmpeg-core.mjs"
   },
   "dependencies": {

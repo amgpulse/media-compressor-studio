@@ -27,9 +27,9 @@ export default function UploadZone({ onFileUploaded, selectedFile, onReset, lang
   };
 
   const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
-    }
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (file) handleFile(file);
   };
 
   const handleFile = async (file) => {

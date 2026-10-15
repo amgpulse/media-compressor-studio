@@ -73,6 +73,8 @@ npm run build     # copies ffmpeg core + builds to dist/
 npm run preview   # serves the production build locally
 ```
 
+Run the compression argument regression tests with `npm test`.
+
 ---
 
 ## 🌐 Deploying to GitHub Pages

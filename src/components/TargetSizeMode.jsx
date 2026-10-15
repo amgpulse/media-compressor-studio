@@ -6,6 +6,9 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize, la
 
   const isEnglish = language === 'en';
   const originalMB = fileData.size / (1024 * 1024);
+  const stepMB = originalMB < 1 ? 0.001 : 0.1;
+  const minTargetMB = Math.min(stepMB, originalMB);
+  const sizePrecision = originalMB < 1 ? 3 : 1;
   const duration = fileData.metadata?.duration || 1;
 
   // Calculate estimated reduction
@@ -17,11 +20,8 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize, la
   const isBitrateTooLow = estimatedBitrateKbps < 150;
 
   const handlePreset = (mb) => {
-    if (mb < originalMB) {
-      setTargetSize(parseFloat(mb.toFixed(1)));
-    } else {
-      setTargetSize(parseFloat((originalMB * 0.5).toFixed(1)));
-    }
+    const target = mb < originalMB ? mb : originalMB * 0.5;
+    setTargetSize(Math.min(originalMB, Math.max(minTargetMB, parseFloat(target.toFixed(sizePrecision)))));
   };
 
   return (
@@ -41,14 +41,14 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize, la
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <input 
             type="number" 
-            min="1" 
-            max={Math.max(1, (originalMB - 0.5).toFixed(1))}
-            step="0.5"
+            min={minTargetMB}
+            max={originalMB}
+            step={stepMB}
             value={targetSize}
             onChange={(e) => {
               const val = parseFloat(e.target.value);
-              if (!isNaN(val) && val > 0) {
-                setTargetSize(val);
+              if (Number.isFinite(val)) {
+                setTargetSize(Math.min(originalMB, Math.max(minTargetMB, val)));
               }
             }}
             style={{
@@ -72,16 +72,16 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize, la
       <div>
         <input 
           type="range" 
-          min="1" 
-          max={Math.max(2, Math.floor(originalMB - 0.5))} 
-          step="0.5"
+          min={minTargetMB}
+          max={originalMB}
+          step={stepMB}
           value={targetSize}
           onChange={(e) => setTargetSize(parseFloat(e.target.value))}
         />
         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-dim)', fontSize: '0.85rem', marginTop: '6px' }}>
-          <span>{isEnglish ? '1 MB' : '۱ مگابایت'}</span>
-          <span>{Math.round(originalMB / 2)} MB ({isEnglish ? '50%' : '۵۰٪'})</span>
-          <span>{originalMB.toFixed(1)} MB ({isEnglish ? 'original size' : 'حجم اولیه'})</span>
+          <span>{minTargetMB.toFixed(sizePrecision)} MB</span>
+          <span>{(originalMB / 2).toFixed(sizePrecision)} MB ({isEnglish ? '50%' : '۵۰٪'})</span>
+          <span>{originalMB.toFixed(sizePrecision)} MB ({isEnglish ? 'original size' : 'حجم اولیه'})</span>
         </div>
       </div>
 
@@ -149,8 +149,8 @@ export default function TargetSizeMode({ fileData, targetSize, setTargetSize, la
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
             {isEnglish
-              ? `From ${originalMB.toFixed(1)} MB to ${targetSize} MB (saving ${reduction.toFixed(1)} MB)`
-              : `کاهش از ${originalMB.toFixed(1)} مگابایت به ${targetSize} مگابایت (کاهش ${reduction.toFixed(1)} مگابایت)`}
+              ? `From ${originalMB.toFixed(sizePrecision)} MB to ${targetSize} MB (saving ${reduction.toFixed(sizePrecision)} MB)`
+              : `کاهش از ${originalMB.toFixed(sizePrecision)} مگابایت به ${targetSize} مگابایت (کاهش ${reduction.toFixed(sizePrecision)} مگابایت)`}
           </span>
         </div>
 

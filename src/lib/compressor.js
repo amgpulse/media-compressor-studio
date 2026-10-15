@@ -1,6 +1,6 @@
 import { fetchFile } from '@ffmpeg/util';
-import { getFFmpeg } from './ffmpeg';
-import { formatSize } from './metadata';
+import { getFFmpeg } from './ffmpeg.js';
+import { formatSize } from './metadata.js';
 
 const INPUT_NAME = 'input_video';
 const OUTPUT_NAME = 'output_compressed.mp4';
@@ -20,10 +20,17 @@ function parseTimeToSeconds(timeStr) {
 }
 
 export function buildArgs({ mode, targetSizeMB, qualityPreset, resolution, fpsPreset, audioOption, duration }) {
+  if (mode !== 'targetSize' && mode !== 'targetQuality') {
+    throw new Error('INVALID_MODE');
+  }
+
   const args = ['-i', INPUT_NAME];
 
   if (mode === 'targetSize') {
-    if (!duration || duration <= 0) {
+    if (!Number.isFinite(targetSizeMB) || targetSizeMB <= 0) {
+      throw new Error('INVALID_TARGET_SIZE');
+    }
+    if (!Number.isFinite(duration) || duration <= 0) {
       throw new Error('INVALID_DURATION');
     }
 
@@ -43,9 +50,9 @@ export function buildArgs({ mode, targetSizeMB, qualityPreset, resolution, fpsPr
     );
 
     let scaleFilter = '';
-    if (videoBitrateKbps < 300) scaleFilter = 'scale=-2:360';
-    else if (videoBitrateKbps < 600) scaleFilter = 'scale=-2:480';
-    else if (videoBitrateKbps < 1200) scaleFilter = 'scale=-2:720';
+    if (videoBitrateKbps < 300) scaleFilter = 'scale=-2:min(360\\,ih)';
+    else if (videoBitrateKbps < 600) scaleFilter = 'scale=-2:min(480\\,ih)';
+    else if (videoBitrateKbps < 1200) scaleFilter = 'scale=-2:min(720\\,ih)';
 
     if (scaleFilter) args.push('-vf', scaleFilter);
   } else {
@@ -53,10 +60,9 @@ export function buildArgs({ mode, targetSizeMB, qualityPreset, resolution, fpsPr
 
     args.push('-c:v', 'libx264', '-crf', String(crf), '-preset', 'medium');
 
-    if (resolution === '1080') args.push('-vf', 'scale=-2:1080');
-    else if (resolution === '720') args.push('-vf', 'scale=-2:720');
-    else if (resolution === '480') args.push('-vf', 'scale=-2:480');
-    else if (resolution === '360') args.push('-vf', 'scale=-2:360');
+    if (['1080', '720', '480', '360'].includes(resolution)) {
+      args.push('-vf', `scale=-2:min(${resolution}\\,ih)`);
+    }
 
     if (fpsPreset && fpsPreset !== 'original') args.push('-r', fpsPreset);
 
@@ -114,14 +120,14 @@ export async function compressVideo({ file, duration, ...options }, onProgress) 
     }
   };
 
-  await safeDelete(ffmpeg, INPUT_NAME);
-  await safeDelete(ffmpeg, OUTPUT_NAME);
-  await ffmpeg.writeFile(INPUT_NAME, await fetchFile(file));
-
-  ffmpeg.on('log', handleLog);
-  ffmpeg.on('progress', handleProgress);
-
   try {
+    await safeDelete(ffmpeg, INPUT_NAME);
+    await safeDelete(ffmpeg, OUTPUT_NAME);
+    await ffmpeg.writeFile(INPUT_NAME, await fetchFile(file));
+
+    ffmpeg.on('log', handleLog);
+    ffmpeg.on('progress', handleProgress);
+
     const code = await ffmpeg.exec(args);
     if (code !== 0) {
       throw new Error(`FFmpeg exited with code ${code}`);
